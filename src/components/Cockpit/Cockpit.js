@@ -1,6 +1,20 @@
-import React from 'react';
+import React, {useEffect, useRef} from 'react';
+
+import AuthContext from '../../context/auth-context';
 
 const Cockpit = (props) => {
+    
+    const toggleBtnRef = useRef(null);
+
+    // useEffect runs after the DOM has been rendered for the first time
+    useEffect(() => {
+        console.log('[Cockpit.js] useEffect');
+        toggleBtnRef.current.click();
+        return () => {
+            console.log('[Cockpit.js] end of useEffect')
+        }
+    }, [])
+
     const style = {
         backgroundColor: 'green',
         font: 'inherit',
@@ -20,7 +34,6 @@ const Cockpit = (props) => {
         // }
     }
 
-
     // let classes = [];
 
     // if (props.persons.length <= 2) {
@@ -37,7 +50,10 @@ const Cockpit = (props) => {
             <h1>{props.title}</h1>
             <p >This is really working!</p>
             {/* notice that switchNameHandler is a function but is not called with parentheses */}
-            <button style={style} onClick={props.clicked}>Switch Name</button>
+            <button ref={toggleBtnRef} style={style} onClick={props.clicked}>Switch Name</button>
+            <AuthContext.Consumer>
+                {(context) => <button onClick={context.login}>{context.authenticated ? "LOG OUT" : "LOG IN"}</button>}
+            </AuthContext.Consumer>
         </div>
     )
 };

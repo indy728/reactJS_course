@@ -2,18 +2,18 @@ import React, { Component } from 'react';
 
 import './App.css';
 
-import Radium, { StyleRoot } from 'radium';
+// import Radium, { StyleRoot } from 'radium';
 import Persons from '../components/Persons/Persons';
 import Cockpit from '../components/Cockpit/Cockpit';
 import withClass from '../hoc/withClass';
 import Aux from '../hoc/Aux';
+import AuthContext from '../context/auth-context';
 
 class App extends Component {
 
   constructor(props) {
     super(props);
     console.log('[App.js] constructor')
-    console.log(props);
   }
 
   // state must be used with classes that extend components
@@ -25,7 +25,9 @@ class App extends Component {
       {id: 'hjfdl4', name: 'Graham', age: 39},
     ],
     otherState: 'some other value',
-    showPersons: false
+    showPersons: false,
+    changeCounter: 0,
+    authenticated: false
   }
 
   static getDerivedStateFromProps(props, state) {
@@ -70,7 +72,13 @@ class App extends Component {
         //     {name: 'Graham', age: 39},
         //   ]
         // }) 
-    this.setState({persons: persons});
+    // this.setState({persons: persons});
+    this.setState( (prevState, props) => {
+      return {
+        persons: persons,
+        changeCounter: prevState.changeCounter + 1
+      }
+    });
   }
 
   deletePersonHandler = (personIndex) => {
@@ -87,7 +95,9 @@ class App extends Component {
     this.setState({showPersons: !doesShow});
   };
 
-  
+  loginHandler = () => {
+    this.setState({authenticated: !this.state.authenticated});
+  }
 
   // Whatever app or component is used, 
   // it always needs to return or render HTML to the DOM
@@ -97,16 +107,25 @@ class App extends Component {
     let persons = null;
     
     if (this.state.showPersons) {
-      persons = <Persons persons={this.state.persons} clicked={this.deletePersonHandler} changed={this.nameChangeHandler} /> 
+      persons = (
+        <Persons
+          persons={this.state.persons}
+          clicked={this.deletePersonHandler}
+          changed={this.nameChangeHandler}
+          isAuthenticated={this.state.authenticated}
+          /> 
+      )
     }
-
-    console.log(this.props)
-
 
     return (
       <Aux>
-          <Cockpit clicked={this.togglePersonsHandler} title={this.props.appTitle} />
+        <AuthContext.Provider value={{authenticated: this.state.authenticated, login: this.loginHandler}}>
+          <Cockpit
+            clicked={this.togglePersonsHandler}
+            title={this.props.appTitle}
+            />
           {persons}
+        </AuthContext.Provider>
       </Aux>
     );
   }
@@ -126,3 +145,4 @@ class App extends Component {
 
 // export default Radium(App);
 export default withClass(App, "App");
+// export default App;
