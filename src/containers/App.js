@@ -1,9 +1,21 @@
 import React, { Component } from 'react';
+
 import './App.css';
-import Person from './Person/Person';
+
 import Radium, { StyleRoot } from 'radium';
+import Persons from '../components/Persons/Persons';
+import Cockpit from '../components/Cockpit/Cockpit';
+import withClass from '../hoc/withClass';
+import Aux from '../hoc/Aux';
 
 class App extends Component {
+
+  constructor(props) {
+    super(props);
+    console.log('[App.js] constructor')
+    console.log(props);
+  }
+
   // state must be used with classes that extend components
   // **use state with care
   state = {
@@ -14,6 +26,15 @@ class App extends Component {
     ],
     otherState: 'some other value',
     showPersons: false
+  }
+
+  static getDerivedStateFromProps(props, state) {
+    console.log('[App.js] getDerivedStateFromProps', props);
+    return state;
+  }
+
+  componentDidMount() {
+    console.log('[App.js] componentDidMount');
   }
 
   // switchNameHandler = (newName) => {
@@ -71,64 +92,22 @@ class App extends Component {
   // Whatever app or component is used, 
   // it always needs to return or render HTML to the DOM
   render() {
-    const style = {
-      backgroundColor: 'green',
-      font: 'inherit',
-      border: '1px solid blue',
-      padding: '8px',
-      cursor: 'pointer',
-      color: 'white',
-      // Radium is required for pseudo selectors on inline styling
-      ':hover': {
-        backgroundColor: 'lightgreen',
-        color: 'black'
-      }
-    }
 
+    console.log('[App.js] render');
     let persons = null;
     
     if (this.state.showPersons) {
-      persons = (
-        <div>
-          {this.state.persons.map((person, index) => {
-            return <Person
-              click={() => this.deletePersonHandler(index)}
-              name={person.name}
-              age={person.age}
-              key={person.id}
-              changed={(event) => this.nameChangeHandler(event, person.id)}/>
-          })}
-        </div>
-      );
-
-      style.backgroundColor = 'red';
-      style[':hover'] = {
-        backgroundColor: 'salmon',
-        color: 'black'
-      }
+      persons = <Persons persons={this.state.persons} clicked={this.deletePersonHandler} changed={this.nameChangeHandler} /> 
     }
 
-    let classes = [];
-
-    if (this.state.persons.length <= 2) {
-      classes.push('red')
-    }
-    if (this.state.persons.length <= 1) {
-      classes.push('bold')
-    }
-
+    console.log(this.props)
 
 
     return (
-      <StyleRoot>
-        <div className="App">
-          <h1>Hi, I'm a React App</h1>
-          <p className={classes.join(' ')}>This is really working!</p>
-          {/* notice that switchNameHandler is a function but is not called with parentheses */}
-          <button style={style} onClick={this.togglePersonsHandler}>Switch Name</button>
+      <Aux>
+          <Cockpit clicked={this.togglePersonsHandler} title={this.props.appTitle} />
           {persons}
-        </div>
-      </StyleRoot>
+      </Aux>
     );
   }
 }
@@ -145,4 +124,5 @@ class App extends Component {
     //   name={this.state.persons[2].name}
     //   age={this.state.persons[2].age}/> */}
 
-export default Radium(App);
+// export default Radium(App);
+export default withClass(App, "App");
