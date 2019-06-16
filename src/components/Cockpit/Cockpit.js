@@ -1,10 +1,12 @@
-import React, {useEffect, useRef} from 'react';
+import React, {useEffect, useRef, useContext} from 'react';
 
 import AuthContext from '../../context/auth-context';
 
 const Cockpit = (props) => {
     
     const toggleBtnRef = useRef(null);
+
+    const authContext = useContext(AuthContext)
 
     // useEffect runs after the DOM has been rendered for the first time
     useEffect(() => {
@@ -51,9 +53,10 @@ const Cockpit = (props) => {
             <p >This is really working!</p>
             {/* notice that switchNameHandler is a function but is not called with parentheses */}
             <button ref={toggleBtnRef} style={style} onClick={props.clicked}>Switch Name</button>
-            <AuthContext.Consumer>
+            {/* <AuthContext.Consumer>
                 {(context) => <button onClick={context.login}>{context.authenticated ? "LOG OUT" : "LOG IN"}</button>}
-            </AuthContext.Consumer>
+            </AuthContext.Consumer> */}
+            {<button onClick={authContext.login}>{authContext.authenticated ? "LOG OUT" : "LOG IN"}</button>}
         </div>
     )
 };
